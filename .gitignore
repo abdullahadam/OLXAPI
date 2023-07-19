@@ -1,7 +1,0 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/.vs/ourOLXAPI/v16/TestStore/0
-/ourOLXAPI/bin/Debug/netcoreapp3.1
-/ourOLXAPI/obj/Release/netcoreapp3.1
