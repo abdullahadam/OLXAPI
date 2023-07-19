@@ -63,7 +63,7 @@ namespace ourOLXAPI.Controllers
 
             var response = _personService.DeleteAllPersons(request);
 
-            return Ok();
+            return Ok(response);
 
         }
 
