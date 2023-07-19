@@ -161,7 +161,7 @@ namespace ourOLXAPI.Services
             response.Result = new List<Person>();
 
 
-            string query = "delete from dbo.Person where Id = '@Id'";
+            string query = $"delete from dbo.Person where Id = {request.Id}";
             //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
