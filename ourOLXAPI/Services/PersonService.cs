@@ -110,11 +110,6 @@ namespace ourOLXAPI.Services
             return response;
         }
 
-
-
-
-
-
         public PersonResponse UpdateAllPersons( FieldsToUpdate request)
         {
             var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
@@ -124,16 +119,17 @@ namespace ourOLXAPI.Services
             string updateQuery = "UPDATE dbo.Person SET FirstName = @FirstName, SurName = @SurName, IdNumber = @IdNumber, DateOfBirth = @DateOfBirth, Age = @Age, Gender = @Gender WHERE Id = @Id";
 
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-
-            using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(updateQuery, connection))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                   
+                    connection.Open();
 
-                  
+                    using (SqlCommand command = new SqlCommand(updateQuery, connection))
+                    {
+
+
+
                         command.Parameters.AddWithValue("@Name", request.FirstName);
                         command.Parameters.AddWithValue("@SurName", request.Surname);
                         command.Parameters.AddWithValue("@IDNumber", request.IdNumber);
@@ -144,9 +140,16 @@ namespace ourOLXAPI.Services
 
                         command.ExecuteNonQuery();
                     }
-                connection.Close();
+                    connection.Close();
 
+                }
             }
+            catch (Exception exx)
+            {
+                response.Message = $"Failure to upload {request.FirstName} {request.Surname} , reason for failure : {exx.Message.ToString()} ";
+                response.IsSuccess = false;
+            }
+            
 
             return response;
         }
@@ -164,36 +167,31 @@ namespace ourOLXAPI.Services
             string query = $"delete from dbo.Person where Id = {request.Id}";
             //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-
-            using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@Name", request.Name);
-                        command.Parameters.AddWithValue("@SurName", request.SurName);
-                        command.Parameters.AddWithValue("@IDNumber", request.IDNumber);
-                        command.Parameters.AddWithValue("@DateOfBirth", request.DateOfBirth);
-                        command.Parameters.AddWithValue("@Age", request.Age);
-                        command.Parameters.AddWithValue("@Gender", request.Gender);
-                        command.Parameters.AddWithValue("@Id", request.Id);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"{request.Id} has been deleted successfully.";
+                            response.IsSuccess = true;
 
-                        int rowsAffected = command.ExecuteNonQuery();
-
-
-                        response.IsSuccess = true;
-                        response.Message = $"{rowsAffected} row(s) deleted.";
+                        }
                     }
+                    connection.Close();
                 }
-                connection.Close();
             }
+            catch (Exception exx)
+            {
+                response.Message = $"Failure to delete {request.Id} , reason for failure : {exx.Message.ToString()} ";
+                response.IsSuccess = false;
 
-
-
-
+            }
+            
             return response;
         }
 
