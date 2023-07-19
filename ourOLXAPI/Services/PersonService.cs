@@ -150,58 +150,59 @@ namespace ourOLXAPI.Services
 
             return response;
         }
-         
+        public PersonResponse DeleteAllPersons(DeletePersonRequest request)
+        {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+
+            var response = new PersonResponse();
+
+
+
+            response.Result = new List<Person>();
+
+
+            string query = "delete from dbo.Person where Id = '@Id'";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        command.Parameters.AddWithValue("@Name", request.Name);
+                        command.Parameters.AddWithValue("@SurName", request.SurName);
+                        command.Parameters.AddWithValue("@IDNumber", request.IDNumber);
+                        command.Parameters.AddWithValue("@DateOfBirth", request.DateOfBirth);
+                        command.Parameters.AddWithValue("@Age", request.Age);
+                        command.Parameters.AddWithValue("@Gender", request.Gender);
+                        command.Parameters.AddWithValue("@Id", request.Id);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+
+                        response.IsSuccess = true;
+                        response.Message = $"{rowsAffected} row(s) deleted.";
+                    }
+                }
+                connection.Close();
+            }
+
+
+
+
+            return response;
+        }
+
     }
-     
-    }
+
+}
 
 
-    //public PersonResponse DeleteAllPersons(DeletePersonRequest request)
-    //    {
-    //        var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
-           
-    //        var response = new PersonResponse();
-
-            
-
-    //        response.Result = new List<Person>();
-
-
-    //        string query = "delete from dbo.Person where Id = '@Id'" ;
-    //        //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
-    //        ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-
-    //        using (SqlConnection connection = new SqlConnection(sqlConnectionString))
-    //        {
-    //            connection.Open();
-
-    //            using (SqlCommand command = new SqlCommand(query, connection))
-    //            {
-    //                using (SqlDataReader reader = command.ExecuteReader())
-    //                {
-    //                    command.Parameters.AddWithValue("@Name", request.Name);
-    //                    command.Parameters.AddWithValue("@SurName", request.SurName);
-    //                    command.Parameters.AddWithValue("@IDNumber", request.IDNumber);
-    //                    command.Parameters.AddWithValue("@DateOfBirth", request.DateOfBirth);
-    //                    command.Parameters.AddWithValue("@Age", request.Age);
-    //                    command.Parameters.AddWithValue("@Gender", request.Gender);
-    //                    command.Parameters.AddWithValue("@Id", request.Id);
-
-    //                    int rowsAffected = command.ExecuteNonQuery();
-
-
-    //                    response.IsSuccess = true;
-    //                    response.Message = $"{rowsAffected} row(s) deleted.";
-    //                }
-    //            }
-    //            connection.Close();
-    //        }
-
-
-
-
-    //        return response;
-    //    }
+    
  //   }
 
 

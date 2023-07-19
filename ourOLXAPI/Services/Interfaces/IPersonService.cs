@@ -11,7 +11,7 @@ namespace ourOLXAPI.Services.Interfaces
         PersonResponse GetAllPersons(string fileLocation);
         PersonResponse CreateAllPersons(CreatePersonRequest request);
         PersonResponse UpdateAllPersons( FieldsToUpdate request);
-      //  PersonResponse DeleteAllPersons(DeletePersonRequest request);
+        PersonResponse DeleteAllPersons(DeletePersonRequest request);
 
 
 

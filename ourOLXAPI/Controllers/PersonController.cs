@@ -56,16 +56,16 @@ namespace ourOLXAPI.Controllers
 
         }
 
-        //[HttpPost]
-        //[Route("deletePerson", Name = "DeletePerson")]
-        //public IActionResult DeletePerson([FromBody] DeletePersonRequest request)
-        //{
+        [HttpPost]
+        [Route("deletePerson", Name = "DeletePerson")]
+        public IActionResult DeletePerson([FromBody] DeletePersonRequest request)
+        {
 
-        //var response = _personService.DeleteAllPersons(request);
+            var response = _personService.DeleteAllPersons(request);
 
-        //    return Ok();
+            return Ok();
 
-        //}
+        }
 
 
 
