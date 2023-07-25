@@ -45,7 +45,7 @@ namespace ourOLXAPI.Services.Interfaces
                     {
                         while (reader.Read())
                         {
-                        var buyerToAdd = new Buyer ();
+                            var buyerToAdd = new Buyer ();
 
                             buyerToAdd.Name = $"{reader.GetString(1).Replace(" ",string.Empty)} {reader.GetString(2).Replace(" ",string.Empty)}";
                             buyerToAdd.DOB = reader.GetString(3);
