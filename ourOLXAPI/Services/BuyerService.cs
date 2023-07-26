@@ -20,13 +20,12 @@ namespace ourOLXAPI.Services.Interfaces
         {
             _appSettings = appSettings;
         }
-        public BuyerResponse GetBuyerName(string fileLocation)
+        public BuyerResponse GetBuyerName()
         {
             var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
             var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new BuyerResponse();
 
-            var buyerLocation = fileLocation;
 
             response.Result = new List<Buyer>();
 
@@ -35,29 +34,40 @@ namespace ourOLXAPI.Services.Interfaces
             //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
-            using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var buyerToAdd = new Buyer ();
+                    connection.Open();
 
-                            buyerToAdd.Name = $"{reader.GetString(1).Replace(" ",string.Empty)} {reader.GetString(2).Replace(" ",string.Empty)}";
-                            buyerToAdd.DOB = reader.GetString(3);
-                            buyerToAdd.Age = reader.GetInt32(4);
-                            buyerToAdd.Gender = reader.GetString(5);
-                            response.Result.Add(buyerToAdd);
-                            // Do something with the retrieved data
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var buyerToAdd = new Buyer();
+                                buyerToAdd.Id = Convert.ToInt32($"{reader.GetInt32(0).ToString()}");
+                                buyerToAdd.Name = $"{reader.GetString(1).Replace(" ", string.Empty)} {reader.GetString(2).Replace(" ", string.Empty)}";
+                                buyerToAdd.DOB = reader.GetString(3);
+                                buyerToAdd.Age = reader.GetInt32(4);
+                                buyerToAdd.Gender = reader.GetString(5).Replace(" ", string.Empty);
+                                response.Result.Add(buyerToAdd);
+                                // Do something with the retrieved data
+                            }
                         }
                     }
+                    connection.Close();
                 }
-                connection.Close();
+                response.IsSuccess = true;
+                response.Message = "Successfully retrieved data";
             }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
+            }
+            
 
 
 

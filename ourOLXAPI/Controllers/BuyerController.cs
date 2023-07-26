@@ -29,10 +29,10 @@ namespace ourOLXAPI.Controllers
 
         [HttpGet]
         [Route("getbuyername", Name = "GetBuyerName")]
-        public IActionResult GetBuyerName([Required] string fileLocation)
+        public IActionResult GetBuyerName()
         {
 
-            var response = _BuyerService.GetBuyerName(fileLocation);
+            var response = _BuyerService.GetBuyerName();
 
             return Ok(response);
 

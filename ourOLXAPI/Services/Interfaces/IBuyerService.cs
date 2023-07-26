@@ -8,7 +8,7 @@ namespace ourOLXAPI.Services.Interfaces
 {
     public interface IBuyerService
     {
-        BuyerResponse GetBuyerName(string fileLocation);
+        BuyerResponse GetBuyerName();
         BuyerNameCreateResponse CreateBuyerName(BuyerNameCreateRequest request);
         BuyerNameDeleteResponse DeleteBuyerName(BuyerNameDeleteRequest request);
         BuyerNameUpdateResponse UpdateBuyerName(BuyerNameUpdateRequest request);
