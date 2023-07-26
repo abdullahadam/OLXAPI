@@ -179,21 +179,44 @@ namespace ourOLXAPI.Services.Interfaces
 
         public BuyerNameUpdateResponse UpdateBuyerName(BuyerNameUpdateRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new BuyerNameUpdateResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
-            {
-                if (file.Contains(request.FileName))
-                {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
 
+
+         
+
+            string query = $"update dbo.BuyerTable set Name = '{request.Name}',Surname = '{request.Surname}' where Id = '{request.Id}'";
+
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Issuccess = true;
+                            response.Message = "Successfully retrieved data";
+                        }
+                    }
+                    connection.Close();
                 }
+                
             }
+            catch (Exception ex)
+            {
+                response.Issuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
+            }
+
+
 
 
 

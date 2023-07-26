@@ -21,3 +21,11 @@
 *.pdb
 *.cache
 *.editorconfig
+.vs/ourOLXAPI/v16/.suo
+.vs/slnx.sqlite
+ourOLXAPI/bin/Debug/netcoreapp3.1/ourOLXAPI.dll
+ourOLXAPI/bin/Debug/netcoreapp3.1/ourOLXAPI.pdb
+ourOLXAPI/obj/Debug/netcoreapp3.1/ourOLXAPI.assets.cache
+ourOLXAPI/obj/Debug/netcoreapp3.1/ourOLXAPI.dll
+ourOLXAPI/obj/Debug/netcoreapp3.1/ourOLXAPI.GeneratedMSBuildEditorConfig.editorconfig
+ourOLXAPI/obj/Debug/netcoreapp3.1/ourOLXAPI.pdb
