@@ -9,6 +9,6 @@ namespace ourOLXAPI.Models
     {
         public bool Issuccess { get; set; }
         public string Message { get; set; }
-        public List<BuyerName> Result { get; set; }
+        public List<Buyer> Result { get; set; }
     }
 }
