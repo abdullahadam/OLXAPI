@@ -4,3 +4,4 @@
 
 /.vs/ourOLXAPI/config/applicationhost.config
 /ourOLXAPI/bin/Debug/netcoreapp3.1/Properties
+/ourOLXAPI/obj/Release/netcoreapp3.1
