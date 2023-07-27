@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Alienware\\Source\\Repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj": {}
+    "C:\\Users\\Alienware\\source\\repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Alienware\\Source\\Repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj": {
+    "C:\\Users\\Alienware\\source\\repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Alienware\\Source\\Repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj",
+        "projectUniqueName": "C:\\Users\\Alienware\\source\\repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj",
         "projectName": "ourOLXAPI",
-        "projectPath": "C:\\Users\\Alienware\\Source\\Repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj",
+        "projectPath": "C:\\Users\\Alienware\\source\\repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\ourOLXAPI.csproj",
         "packagesPath": "C:\\Users\\Alienware\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alienware\\Source\\Repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\obj\\",
+        "outputPath": "C:\\Users\\Alienware\\source\\repos\\abdullahadam\\OLXAPI\\ourOLXAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Alienware\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -131,47 +131,41 @@ namespace ourOLXAPI.Services.Interfaces
 
         public BuyerNameDeleteResponse DeleteBuyerName(BuyerNameDeleteRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+
             var response = new BuyerNameDeleteResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+
+           
+
+
+            string query = $"delete from dbo.BuyerTable where Id = {request.Id}";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Remove(request.DeletedBuyerName);
-                    //File.WriteAllLines(request.FileLocation, ReadRecordList);
+                    connection.Open();
 
-                    string fileRecord = $"{request.DeletedBuyerName}";
-                    string[] fileOutput =
-               {
-                    fileRecord = null
-                };
-
-                    try
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(fileOutput);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"{request.Name} has been deleted successfully.";
+                            response.Issuccess = true;
 
-
-                        response.Message = "BuyerName deleted successfully";
-                        response.Issuccess = true;
-
+                        }
                     }
-                    catch (Exception ex)
-                    {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
-                    }
-
-
-                    reader.Close();
+                    connection.Close();
                 }
+            }
+            catch (Exception exx)
+            {
+                response.Message = $"Failure to delete {request.Name} , reason for failure : {exx.Message.ToString()} ";
+                response.Issuccess = false;
+
             }
 
             return response;
