@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using ourOLXAPI.Models;
 using ourOLXAPI.Services.Interfaces;
 
@@ -10,83 +13,115 @@ namespace ourOLXAPI.Services
 {
     public class SellerService : ISellerService
     {
-        public SellerNameResponse GetSellerName(string fileLocation)
+
+        private readonly IConfiguration _appSettings;
+
+        public SellerService(
+            IConfiguration appSettings)
         {
-            var sellerNameLocation = fileLocation;
+            _appSettings = appSettings;
+        }
+
+
+        public SellerNameResponse GetSellerName()
+        {
+
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new SellerNameResponse();
-            response.Result = new List<SellerName>();
 
-            foreach (string file in Directory.EnumerateFiles(sellerNameLocation, "*.txt"))
+            response.Result = new List<Seller>();
+
+
+
+
+
+            string query = "SELECT * FROM dbo.SellerTable";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            try
             {
-                if (file.Contains("SellerName"))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    foreach (var SellerNameFromFile in ReadRecordList)
-                    {
-                        var SellerName = new SellerName();
-                        SellerName.Name = SellerNameFromFile;
-                        response.Result.Add(SellerName);
-                    }
-                    reader.Close();
-                }
+                    connection.Open();
 
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var sellerToAdd = new Seller();
+                                sellerToAdd.Id = Convert.ToInt32($"{reader.GetInt32(0).ToString()}");
+                                sellerToAdd.Name = $"{reader.GetString(1).Replace(" ", string.Empty)}";
+                                sellerToAdd.Surname = $"{reader.GetString(2).Replace(" ", string.Empty)}"; 
+                                sellerToAdd.DOB = reader.GetString(3);
+                                sellerToAdd.Age = reader.GetInt32(4);
+                                sellerToAdd.Gender = reader.GetString(5).Replace(" ", string.Empty);
+                                response.Result.Add(sellerToAdd);
+                             
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+                response.Issuccess = true;
+                response.Message = "Successfully retrieved data";
             }
+            catch (Exception ex)
+            {
+                response.Issuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
+            }
+
+
+
+
+
             return response;
         }
         public SellerNameCreateResponse CreateSellerName(SellerNameCreateRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
 
             var response = new SellerNameCreateResponse();
 
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+            response.Result = new List<Seller>();
+
+
+
+            string query = $"insert into dbo.SellerTable values({request.Id},'{request.Name}','{request.Surname}','{request.DOB}',{request.Age},'{request.Gender}')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Add(request.NewSellerName);
-                    // File.WriteAllLines(request.FileLocation, ReadRecordList);
+                    connection.Open();
 
-
-                    string fileRecord = $"{request.NewSellerName}";
-                    string[] fileOutput =
-                {
-
-                    fileRecord
-                };
-
-                    try
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(Environment.NewLine + fileOutput); ;
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"{request.Name} {request.Surname} was added successfully.";
+                            response.IsSuccess = true;
 
-
-                        response.Message = "New SellerName created successfully";
-                        response.Issuccess = true;
-
-
+                        }
                     }
-                    catch (Exception ex)
-                    {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
-                    }
-
-
-                    reader.Close();
+                    connection.Close();
                 }
+
             }
+            catch (Exception ex)
+            {
+                response.Message = $"Failure to upload {request.Name} {request.Surname} , reason for failure : {ex.Message.ToString()} ";
+                response.IsSuccess = false;
+            }
+
+
+
 
             return response;
         }
@@ -94,47 +129,41 @@ namespace ourOLXAPI.Services
 
         public SellerNameDeleteResponse DeleteSellerName(SellerNameDeleteRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+
             var response = new SellerNameDeleteResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+
+
+
+
+            string query = $"delete from dbo.SellerTable where Id = {request.Id}";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Remove(request.DeletedSellerName);
-                    //File.WriteAllLines(request.FileLocation, ReadRecordList);
+                    connection.Open();
 
-                    string fileRecord = $"{request.DeletedSellerName}";
-                    string[] fileOutput =
-               {
-                    fileRecord = null
-                };
-
-                    try
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(fileOutput);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"{request.Name} has been deleted successfully.";
+                            response.Issuccess = true;
 
-
-                        response.Message = "Sellername deleted successfully";
-                        response.Issuccess = true;
-
+                        }
                     }
-                    catch (Exception ex)
-                    {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
-                    }
-
-
-                    reader.Close();
+                    connection.Close();
                 }
+            }
+            catch (Exception exx)
+            {
+                response.Message = $"Failure to delete {request.Name} , reason for failure : {exx.Message.ToString()} ";
+                response.Issuccess = false;
+
             }
 
             return response;
@@ -142,21 +171,44 @@ namespace ourOLXAPI.Services
 
         public SellerNameUpdateResponse UpdateSellerName(SellerNameUpdateRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new SellerNameUpdateResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
-            {
-                if (file.Contains(request.FileName))
-                {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
 
+
+
+
+            string query = $"update dbo.SellerTable set Name = '{request.Name}',Surname = '{request.Surname}' where Id = '{request.Id}'";
+
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Issuccess = true;
+                            response.Message = "Update Succesfull.";
+                        }
+                    }
+                    connection.Close();
                 }
+
             }
+            catch (Exception ex)
+            {
+                response.Issuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
+            }
+
+
 
 
 

@@ -8,7 +8,7 @@ namespace ourOLXAPI.Services.Interfaces
 {
     public interface ISellerService
     {
-        SellerNameResponse GetSellerName(string fileLocation);
+        SellerNameResponse GetSellerName();
 
         SellerNameCreateResponse CreateSellerName(SellerNameCreateRequest request);
 

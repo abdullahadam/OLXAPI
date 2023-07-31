@@ -7,8 +7,9 @@ namespace ourOLXAPI.Models
 {
     public class SellerNameCreateResponse
     {
-        public bool Issuccess { get; set; }
+        public bool IsSuccess { get; set; }
         public string Message { get; set; }
-        public string NewSellerName { get; set; }
+
+        public List<Seller> Result { get; set; }
     }
 }
