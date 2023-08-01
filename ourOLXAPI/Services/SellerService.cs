@@ -127,7 +127,7 @@ namespace ourOLXAPI.Services
         }
 
 
-        public SellerNameDeleteResponse DeleteSellerName(SellerNameDeleteRequest request)
+        public SellerNameDeleteResponse DeleteSellerName(int request)
         {
             var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
 
@@ -138,7 +138,7 @@ namespace ourOLXAPI.Services
 
 
 
-            string query = $"delete from dbo.SellerTable where Id = {request.Id}";
+            string query = $"delete from dbo.SellerTable where Id = {request}";
             //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             try
@@ -151,7 +151,7 @@ namespace ourOLXAPI.Services
                     {
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            response.Message = $"{request.Name} has been deleted successfully.";
+                            response.Message = $"seller id ref:{request} has been deleted successfully.";
                             response.Issuccess = true;
 
                         }
@@ -161,7 +161,7 @@ namespace ourOLXAPI.Services
             }
             catch (Exception exx)
             {
-                response.Message = $"Failure to delete {request.Name} , reason for failure : {exx.Message.ToString()} ";
+                response.Message = $"Failure to delete seller id ref:{request} , reason for failure : {exx.Message.ToString()} ";
                 response.Issuccess = false;
 
             }

@@ -12,7 +12,7 @@ namespace ourOLXAPI.Services.Interfaces
 
         SellerNameCreateResponse CreateSellerName(SellerNameCreateRequest request);
 
-        SellerNameDeleteResponse DeleteSellerName(SellerNameDeleteRequest request);
+        SellerNameDeleteResponse DeleteSellerName(int request);
         SellerNameUpdateResponse UpdateSellerName(SellerNameUpdateRequest request);
     }
 }

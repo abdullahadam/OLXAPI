@@ -79,52 +79,44 @@ namespace ourOLXAPI.Services.Interfaces
         public BuyerNameCreateResponse CreateBuyerName(BuyerNameCreateRequest request)
         {
 
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+
             var response = new BuyerNameCreateResponse();
 
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+
+
+
+            string query = $"insert into dbo.BuyerTable values({request.Id},'{request.Name}','{request.Surname}','{request.DOB}',{request.Age},'{request.Gender}')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Add(request.NewBuyerName);
-                    // File.WriteAllLines(request.FileLocation, ReadRecordList);
+                    connection.Open();
 
-
-                    string fileRecord = $"{request.NewBuyerName}";
-                    string[] fileOutput =
-                {
-
-                    fileRecord
-                };
-
-                    try
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(Environment.NewLine + fileOutput); ;
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"{request.Name} {request.Surname} was added successfully.";
+                            response.Issuccess = true;
 
-
-                        response.Message = "New BuyerName created successfully";
-                        response.Issuccess = true;
-
-
+                        }
                     }
-                    catch (Exception ex)
-                    {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
-                    }
-
-
-                    reader.Close();
+                    connection.Close();
                 }
+
             }
+            catch (Exception ex)
+            {
+                response.Message = $"Failure to upload {request.Name} {request.Surname} , reason for failure : {ex.Message.ToString()} ";
+                response.Issuccess = false;
+            }
+
+
+
 
             return response;
         }
