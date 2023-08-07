@@ -1,12 +1,13 @@
 {
   "ExpandedNodes": [
     "",
+    "\\ourOLXAPI",
     "\\ourOLXAPI\\Controllers",
     "\\ourOLXAPI\\Models",
     "\\ourOLXAPI\\Models\\Buyers",
     "\\ourOLXAPI\\Services",
     "\\ourOLXAPI\\Services\\Interfaces"
   ],
-  "SelectedNode": "\\ourOLXAPI.sln",
+  "SelectedNode": "\\ourOLXAPI\\Services\\SellerService.cs",
   "PreviewInSolutionExplorer": false
 }

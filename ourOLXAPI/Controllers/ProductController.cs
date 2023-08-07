@@ -27,20 +27,22 @@ namespace ourOLXAPI.Controllers
 
         [HttpGet]
         [Route("getproducttype", Name = "GetProductType")]
-        public IActionResult GetProductType([Required] string fileLocation)
+        public IActionResult GetProductType()
         {
 
-            var response = _productService.GetProductTypes(fileLocation);
+            var response = _productService.GetProductTypes();
 
             return Ok(response);
 
         }
 
+        
+
 
 
         [HttpPost]
         [Route("createproducttype", Name = "CreateProductType")]
-        public IActionResult CreateProductType([FromBody] ProductTypeCreateRequest request)
+        public IActionResult CreateProductType(ProductTypeCreateRequest request)
         {
             var response = _productService.CreateProductType(request);
 
@@ -151,6 +153,28 @@ namespace ourOLXAPI.Controllers
         public IActionResult UpdateProductName([FromBody] ProductNameUpdateRequest request)
         {
             var response = _productService.UpdateProductName(request);
+
+            return Ok(response);
+
+        }
+
+        [HttpGet]
+        [Route("getproduct", Name = "GetProduct")]
+        public IActionResult GetProduct()
+        {
+
+            var response = _productService.GetProductTypes();
+
+            return Ok(response);
+
+        }
+
+        [HttpPost]
+        [Route("createproduct", Name = "CreateProduct")]
+        public IActionResult CreateProduct()
+        {
+
+            var response = _productService.GetProductTypes();
 
             return Ok(response);
 

@@ -7,8 +7,8 @@ namespace ourOLXAPI.Models
 {
     public class ProductTypeUpdateRequest
     {
-        public string FileName { get; set; }
-        public string FileLocation { get; set; }
-        public string UpdatedProductType { get; set; }
+        public int Id { get; set; }
+        public string ProductTypeDescription { get; set; }
+        
     }
 }

@@ -7,6 +7,8 @@ namespace ourOLXAPI.Models
 {
     public class ProductType
     {
-        public string Name { get; set; }
+       
+        public int Id { get; set; }
+        public  string ProductTypeDescription { get; set; }
     }
 }
