@@ -28,7 +28,7 @@ namespace ourOLXAPI.Services.Interfaces
         ProductNameDeleteResponse DeleteProductName(ProductNameDeleteRequest request);
         ProductNameUpdateResponse UpdateProductName(ProductNameUpdateRequest request);
 
-        Product GetProduct(string fileLocation);
+        ProductResponse GetProduct(string fileLocation);
 
     }
 }

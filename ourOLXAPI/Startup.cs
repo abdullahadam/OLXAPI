@@ -44,6 +44,8 @@ namespace ourOLXAPI
             services.AddSingleton<IBuyerService, BuyerService>();
             services.AddSingleton<ISellerService, SellerService>();
             services.AddSingleton<IPersonService, PersonService>();
+            services.AddSingleton<INotificationsService, NotificationsService>();
+
 
         }
 

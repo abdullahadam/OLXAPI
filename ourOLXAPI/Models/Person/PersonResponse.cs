@@ -20,13 +20,10 @@ namespace ourOLXAPI.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Occupation { get; set; }
-
         public string DateOfBirth { get; set; }
         public int Age { get; set; }
         public string Gender { get; set; }
         public string IDNumber { get; set; }
-
-
     }
 
     public class CreatePersonRequest

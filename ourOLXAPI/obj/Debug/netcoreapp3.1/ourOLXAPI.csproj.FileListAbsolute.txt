@@ -141,9 +141,6 @@ F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\bin\Debug\netcoreapp3.1\runtimes\win\l
 F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.csprojAssemblyReference.cache
 F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.AssemblyInfoInputs.cache
 F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.AssemblyInfo.cs
-F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.csproj.CoreCompileInputs.cache
-F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.MvcApplicationPartsAssemblyInfo.cs
-F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.MvcApplicationPartsAssemblyInfo.cache
 F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.RazorTargetAssemblyInfo.cache
 F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.csproj.CopyComplete
 F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\staticwebassets\ourOLXAPI.StaticWebAssets.Manifest.cache
@@ -228,3 +225,9 @@ C:\Users\Alienware\Source\Repos\abdullahadam\OLXAPI\ourOLXAPI\obj\Debug\netcorea
 C:\Users\Alienware\Source\Repos\abdullahadam\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.RazorTargetAssemblyInfo.cache
 C:\Users\Alienware\Source\Repos\abdullahadam\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.csproj.CopyComplete
 C:\Users\Alienware\Source\Repos\abdullahadam\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.genruntimeconfig.cache
+F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\bin\Debug\netcoreapp3.1\System.Net.Http.Formatting.dll
+F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll
+F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.csproj.CoreCompileInputs.cache
+F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.MvcApplicationPartsAssemblyInfo.cs
+F:\Projects\GitOLXAPINew\OLXAPI\ourOLXAPI\obj\Debug\netcoreapp3.1\ourOLXAPI.MvcApplicationPartsAssemblyInfo.cache

@@ -30,34 +30,43 @@ namespace ourOLXAPI.Services
 
             response.Result = new List<Person>();
 
-
             string query = "SELECT * FROM dbo.Person";
             //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
-            using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+            try
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        var personToAdd = new Person();
-                        while (reader.Read())
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            personToAdd.IDNumber = reader.GetString(3);
-                            personToAdd.Name = $"{reader.GetString(1)} {reader.GetString(2)}";
-                            personToAdd.DateOfBirth = reader.GetString(4);
-                            personToAdd.Age = Convert.ToInt32(reader.GetString(5));
-                            personToAdd.Gender = reader.GetString(6);
-                            response.Result.Add(personToAdd);
-                            // Do something with the retrieved data
+                            var personToAdd = new Person();
+                            while (reader.Read())
+                            {
+                                personToAdd.IDNumber = reader.GetString(3);
+                                personToAdd.Name = $"{reader.GetString(1)} {reader.GetString(2)}";
+                                personToAdd.DateOfBirth = reader.GetString(4);
+                                personToAdd.Age = Convert.ToInt32(reader.GetString(5));
+                                personToAdd.Gender = reader.GetString(6);
+                                response.Result.Add(personToAdd);
+                                // Do something with the retrieved data
+                            }
                         }
                     }
+                    //call slackbot
+                    connection.Close();
                 }
-                connection.Close();
             }
+            catch  (Exception exx)
+            {
+                response.Message = $"Failure to get person from database {sqlConnectionString} , reason for failure : {exx.Message.ToString()} ";
+                response.IsSuccess = false;
+            }
+            
 
 
 
