@@ -47,3 +47,10 @@ ourOLXAPI/obj/ourOLXAPI.csproj.nuget.g.props
 ourOLXAPI/obj/project.assets.json
 ourOLXAPI/obj/project.nuget.cache
 ourOLXAPI/ourOLXAPI.csproj
+.vs/ourOLXAPI/DesignTimeBuild/.dtbcache.v2
+.vs/ourOLXAPI/v16/.suo
+ourOLXAPI/bin/Debug/netcoreapp3.1/ourOLXAPI.dll
+ourOLXAPI/bin/Debug/netcoreapp3.1/ourOLXAPI.pdb
+ourOLXAPI/obj/Debug/netcoreapp3.1/ourOLXAPI.csprojAssemblyReference.cache
+ourOLXAPI/obj/Debug/netcoreapp3.1/ourOLXAPI.dll
+ourOLXAPI/obj/Debug/netcoreapp3.1/ourOLXAPI.pdb
