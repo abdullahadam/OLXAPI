@@ -7,8 +7,7 @@ namespace ourOLXAPI.Models
 {
     public class ProductTypeDeleteRequest
     {
-        public string FileName { get; set; }
-        public string FileLocation { get; set; }
-        public string DeletedProductType { get; set; }
+        public int Id { get; set; }
+       
     }
 }

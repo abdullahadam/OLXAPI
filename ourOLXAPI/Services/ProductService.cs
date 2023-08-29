@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using ourOLXAPI.Models;
 using ourOLXAPI.Services.Interfaces;
 
@@ -10,47 +13,63 @@ namespace ourOLXAPI.Services
 {
     public class ProductService : IProductService
     {
+        private readonly IConfiguration _appSettings;
 
-        public ProducttTypeResponse GetProductTypes(string fileLocation)
+        public ProductService(
+            IConfiguration appSettings)
         {
-            var productTypeLocation = fileLocation;
+            _appSettings = appSettings;
+        }
+
+        public ProducttTypeResponse GetProductTypes()
+        {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new ProducttTypeResponse();
+
+
             response.Result = new List<ProductType>();
 
 
+            string query = "SELECT * FROM dbo.ProductType";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
             try
             {
-                foreach (string file in Directory.EnumerateFiles(productTypeLocation, "*.txt"))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    if (file.Contains("ProductType"))
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-
-                        StreamReader reader = new StreamReader(file);
-                        string readData = reader.ReadToEnd();
-                        string separator = "\r\n";
-                        var ReadRecordList = new List<string>(readData.Split(separator));
-                        ReadRecordList = ReadRecordList.Skip(1).ToList();
-                        ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                        //ReadRecordList.ForEach(x => productTypeFromFile.Add(x));
-                        foreach (var productTypeFromFile in ReadRecordList)
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            var productType = new ProductType();
-                            productType.Name = productTypeFromFile;
-                            response.Result.Add(productType);
+                            while (reader.Read())
+                            {
+                                var productToAdd = new ProductType();
+                                productToAdd.Id = Convert.ToInt32($"{reader.GetInt32(0).ToString()}");
+                                productToAdd.ProductTypeDescription = $"{reader.GetString(1).ToString()}";
+                               
+                                response.Result.Add(productToAdd);
+                                // Do something with the retrieved data
+                            }
                         }
-                        reader.Close();
                     }
+                    connection.Close();
                 }
-
                 response.Issuccess = true;
-                response.Message = "Success";
+                response.Message = "Successfully retrieved data";
             }
-
             catch (Exception ex)
             {
                 response.Issuccess = false;
-                response.Message = ex.Message.ToString();
+                response.Message = $"error message: {ex.Message.ToString()}";
             }
+
+
+
+
 
             return response;
 
@@ -58,100 +77,87 @@ namespace ourOLXAPI.Services
 
         public ProductTypeCreateResponse CreateProductType(ProductTypeCreateRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
 
             var response = new ProductTypeCreateResponse();
 
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
-            {
-                if (file.Contains(request.FileName))
+
+
+
+
+            string query = $"insert into dbo.ProductType values({request.Id},'{request.ProductTypeDescription}')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+           
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Add(request.NewProductType);
-                   // File.WriteAllLines(request.FileLocation, ReadRecordList);
-
-
-                    string fileRecord = $"{request.NewProductType}";
-                    string[] fileOutput =
-                {
-
-                    fileRecord 
-                };
-
-                    try
+                    try 
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(Environment.NewLine + fileOutput); ;
+                    connection.Close();
+                        connection.Open();
 
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                response.Message = $"{request.Id} {request.ProductTypeDescription} was added successfully.";
+                                response.Issuccess = true;
 
-                        response.Message = "New ProductType created successfully";
-                        response.Issuccess = true;
-                      
-
+                            }
+                        }
+                        connection.Close();
                     }
-                    catch (Exception ex)
+                    catch (Exception exx)
                     {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
+                        response.Message = $"Failure to upload {request.Id} {request.ProductTypeDescription} , reason for failure : {exx.Message.ToString()} ";
+                        response.Issuccess = false;
+                    connection.Close();
                     }
-
-
-                    reader.Close();
+                    
                 }
-            }
 
             return response;
+
+
         }
 
         public ProductTypeDeleteResponse DeleteProductType (ProductTypeDeleteRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+
             var response = new ProductTypeDeleteResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+
+
+
+
+            string query = $"delete from dbo.ProductType where Id = {request.Id}";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Remove(request.DeletedProductType);
-                    //File.WriteAllLines(request.FileLocation, ReadRecordList);
+                    connection.Open();
 
-                    string fileRecord = $"{request.DeletedProductType}";
-                    string[] fileOutput =
-               {
-                    fileRecord = null
-                };
-
-                    try
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(fileOutput); 
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"Product id ref:{request} has been deleted successfully.";
+                            response.Issuccess = true;
 
-
-                        response.Message = "ProductType deleted successfully";
-                        response.Issuccess = true;
-
+                        }
                     }
-                    catch (Exception ex)
-                    {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
-                    }
-
-
-                    reader.Close();
+                    connection.Close();
                 }
+            }
+            catch (Exception exx)
+            {
+                response.Message = $"Failure to delete product id ref:{request} , reason for failure : {exx.Message.ToString()} ";
+                response.Issuccess = false;
+
             }
 
             return response;
@@ -159,26 +165,48 @@ namespace ourOLXAPI.Services
 
         public ProductTypeUpdateResponse UpdateProductType(ProductTypeUpdateRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new ProductTypeUpdateResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+
+
+
+            string query = $"update dbo.ProductType set ProductTypeDescription = '{request.ProductTypeDescription}' where Id ={request.Id}";
+
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                  
-                   
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Issuccess = true;
+                            response.Message = "Update Succesfull.";
+                        }
+                    }
+                    connection.Close();
                 }
+
+            }
+            catch (Exception ex)
+            {
+                response.Issuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
             }
 
 
 
-                    return response;
+
+
+            return response;
         }
 
 
@@ -491,6 +519,61 @@ namespace ourOLXAPI.Services
 
 
             return response;
+        }
+
+        public ProductResponse GetProduct(string fileLocation)
+        {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
+            var response = new ProductResponse();
+
+
+            response.Result = new List<Product>();
+
+
+            string query = "SELECT * FROM dbo.Product";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var productToAdd = new Product();
+                                productToAdd.Id = Convert.ToInt32($"{reader.GetInt32(0).ToString()}");
+                                productToAdd.ProductName= $"{reader.GetString(1).ToString()}";
+                                productToAdd.ProductType = $"{reader.GetString(2).ToString()}";
+
+                                response.Result.Add(productToAdd);
+                                // Do something with the retrieved data
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+                response.Issuccess = true;
+                response.Message = "Successfully retrieved data";
+            }
+            catch (Exception ex)
+            {
+                response.Issuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
+            }
+
+
+
+
+
+            return response;
+
         }
 
 

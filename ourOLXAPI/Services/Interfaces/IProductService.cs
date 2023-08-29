@@ -8,7 +8,7 @@ namespace ourOLXAPI.Services.Interfaces
 {
     public interface IProductService
     {
-        ProducttTypeResponse GetProductTypes(string fileLocation);
+        ProducttTypeResponse GetProductTypes();
         ProductTypeCreateResponse CreateProductType(ProductTypeCreateRequest request);
         ProductTypeDeleteResponse DeleteProductType(ProductTypeDeleteRequest request);
         ProductTypeUpdateResponse UpdateProductType(ProductTypeUpdateRequest request);
@@ -28,7 +28,7 @@ namespace ourOLXAPI.Services.Interfaces
         ProductNameDeleteResponse DeleteProductName(ProductNameDeleteRequest request);
         ProductNameUpdateResponse UpdateProductName(ProductNameUpdateRequest request);
 
-
+        ProductResponse GetProduct(string fileLocation);
 
     }
 }

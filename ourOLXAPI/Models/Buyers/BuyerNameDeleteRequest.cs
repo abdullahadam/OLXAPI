@@ -7,8 +7,13 @@ namespace ourOLXAPI.Models
 {
     public class BuyerNameDeleteRequest
     {
-        public string FileName { get; set; }
-        public string FileLocation { get; set; }
-        public string DeletedBuyerName { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string DOB { get; set; }
+        public int Age { get; set; }
+        public string Gender { get; set; }
+
+
     }
 }

@@ -27,10 +27,10 @@ namespace ourOLXAPI.Controllers
 
         [HttpGet]
         [Route("getsellername", Name = "GetSellerName")]
-        public IActionResult GetSellerName([Required] string fileLocation)
+        public IActionResult GetSellerName()
         {
 
-            var response = _sellerService.GetSellerName(fileLocation);
+            var response = _sellerService.GetSellerName();
 
             return Ok(response);
 
@@ -48,10 +48,10 @@ namespace ourOLXAPI.Controllers
         }
 
         [HttpPost]
-        [Route("deletesellername", Name = "DeleteSellerName")]
-        public IActionResult DeleteSellerName([FromBody] SellerNameDeleteRequest request)
+        [Route("deletesellerbyid", Name = "DeleteSellerById")]
+        public IActionResult DeleteSellerById( int sellerId)
         {
-            var response = _sellerService.DeleteSellerName(request);
+            var response = _sellerService.DeleteSellerName(sellerId);
 
             return Ok(response);
 

@@ -2,38 +2,75 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using ourOLXAPI.Models;
 
 namespace ourOLXAPI.Services.Interfaces
 {
     public class BuyerService : IBuyerService
     {
-        public BuyerNameResponse GetBuyerName(string fileLocation)
-        {
-            var buyerNameLocation = fileLocation;
-            var response = new BuyerNameResponse();
-            response.Result = new List<BuyerName>();
 
-            foreach (string file in Directory.EnumerateFiles(buyerNameLocation, "*.txt"))
+        private readonly IConfiguration _appSettings;
+
+        public BuyerService(
+            IConfiguration appSettings)
+        {
+            _appSettings = appSettings;
+        }
+        public BuyerResponse GetBuyerName()
+        {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
+            var response = new BuyerResponse();
+
+
+            response.Result = new List<Buyer>();
+
+
+            string query = "SELECT * FROM dbo.BuyerTable";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            try
             {
-                if (file.Contains("BuyerName"))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    foreach (var BuyerNameFromFile in ReadRecordList)
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        var BuyerName = new BuyerName();
-                        BuyerName.Name = BuyerNameFromFile;
-                        response.Result.Add(BuyerName);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var buyerToAdd = new Buyer();
+                                buyerToAdd.Id = Convert.ToInt32($"{reader.GetInt32(0).ToString()}");
+                                buyerToAdd.Name = $"{reader.GetString(1).Replace(" ", string.Empty)} {reader.GetString(2).Replace(" ", string.Empty)}";
+                                buyerToAdd.DOB = reader.GetString(3);
+                                buyerToAdd.Age = reader.GetInt32(4);
+                                buyerToAdd.Gender = reader.GetString(5).Replace(" ", string.Empty);
+                                response.Result.Add(buyerToAdd);
+                                // Do something with the retrieved data
+                            }
+                        }
                     }
-                    reader.Close();
+                    connection.Close();
                 }
+                response.IsSuccess = true;
+                response.Message = "Successfully retrieved data";
             }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
+            }
+            
+
+
+
 
             return response;
 
@@ -42,99 +79,85 @@ namespace ourOLXAPI.Services.Interfaces
         public BuyerNameCreateResponse CreateBuyerName(BuyerNameCreateRequest request)
         {
 
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+
             var response = new BuyerNameCreateResponse();
 
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+
+
+
+            string query = $"insert into dbo.BuyerTable values({request.Id},'{request.Name}','{request.Surname}','{request.DOB}',{request.Age},'{request.Gender}')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Add(request.NewBuyerName);
-                    // File.WriteAllLines(request.FileLocation, ReadRecordList);
+                    connection.Open();
 
-
-                    string fileRecord = $"{request.NewBuyerName}";
-                    string[] fileOutput =
-                {
-
-                    fileRecord
-                };
-
-                    try
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(Environment.NewLine + fileOutput); ;
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"{request.Name} {request.Surname} was added successfully.";
+                            response.Issuccess = true;
 
-
-                        response.Message = "New BuyerName created successfully";
-                        response.Issuccess = true;
-
-
+                        }
                     }
-                    catch (Exception ex)
-                    {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
-                    }
-
-
-                    reader.Close();
+                    connection.Close();
                 }
+
             }
+            catch (Exception ex)
+            {
+                response.Message = $"Failure to upload {request.Name} {request.Surname} , reason for failure : {ex.Message.ToString()} ";
+                response.Issuccess = false;
+            }
+
+
+
 
             return response;
         }
 
         public BuyerNameDeleteResponse DeleteBuyerName(BuyerNameDeleteRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+
             var response = new BuyerNameDeleteResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
+
+
+           
+
+
+            string query = $"delete from dbo.BuyerTable where Id = {request.Id}";
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            try
             {
-                if (file.Contains(request.FileName))
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
                 {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
-                    ReadRecordList.Remove(request.DeletedBuyerName);
-                    //File.WriteAllLines(request.FileLocation, ReadRecordList);
+                    connection.Open();
 
-                    string fileRecord = $"{request.DeletedBuyerName}";
-                    string[] fileOutput =
-               {
-                    fileRecord = null
-                };
-
-                    try
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        using (var writer = File.AppendText(request.FileLocation))
-                            writer.Write(fileOutput);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Message = $"{request.Name} has been deleted successfully.";
+                            response.Issuccess = true;
 
-
-                        response.Message = "BuyerName deleted successfully";
-                        response.Issuccess = true;
-
+                        }
                     }
-                    catch (Exception ex)
-                    {
-
-                        response.Message = ex.Message.ToString();
-                        return response;
-                    }
-
-
-                    reader.Close();
+                    connection.Close();
                 }
+            }
+            catch (Exception exx)
+            {
+                response.Message = $"Failure to delete {request.Name} , reason for failure : {exx.Message.ToString()} ";
+                response.Issuccess = false;
+
             }
 
             return response;
@@ -142,21 +165,44 @@ namespace ourOLXAPI.Services.Interfaces
 
         public BuyerNameUpdateResponse UpdateBuyerName(BuyerNameUpdateRequest request)
         {
+            var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
+            var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new BuyerNameUpdateResponse();
 
-            foreach (string file in Directory.EnumerateFiles(request.FileLocation, "*.txt"))
-            {
-                if (file.Contains(request.FileName))
-                {
-                    StreamReader reader = new StreamReader(file);
-                    string readData = reader.ReadToEnd();
-                    string separator = "\r\n";
-                    var ReadRecordList = new List<string>(readData.Split(separator));
-                    ReadRecordList = ReadRecordList.Skip(1).ToList();
-                    ReadRecordList = ReadRecordList.Where(x => x.Length > 0).ToList();
 
+
+         
+
+            string query = $"update dbo.BuyerTable set Name = '{request.Name}',Surname = '{request.Surname}' where Id = '{request.Id}'";
+
+            //string query = "insert into dbo.Person values(7,'Ahemds','dodo','9888701234099','1986-01-01',44,'Male')";
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(sqlConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            response.Issuccess = true;
+                            response.Message = "Successfully retrieved data";
+                        }
+                    }
+                    connection.Close();
                 }
+                
             }
+            catch (Exception ex)
+            {
+                response.Issuccess = false;
+                response.Message = $"error message: {ex.Message.ToString()}";
+            }
+
+
 
 
 

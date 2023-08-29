@@ -7,8 +7,8 @@ namespace ourOLXAPI.Models
 {
     public class BuyerNameUpdateRequest
     {
-        public string FileName { get; set; }
-        public string FileLocation { get; set; }
-        public string UpdatedBuyerName { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public int Id { get; set; }
     }
 }
