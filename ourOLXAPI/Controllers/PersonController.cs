@@ -25,10 +25,10 @@ namespace ourOLXAPI.Controllers
 
         [HttpGet]
         [Route("getallpersons", Name = "GetAllPersons")]
-        public IActionResult GetAllPersons([Required] string fileLocation)
+        public IActionResult GetAllPersons()
         {
 
-            var response = _personService.GetAllPersons(fileLocation);
+            var response = _personService.GetAllPersons();
 
             return Ok(response);
 

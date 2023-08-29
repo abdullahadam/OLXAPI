@@ -14,19 +14,19 @@ namespace ourOLXAPI.Services
     public class PersonService : IPersonService
     {
         private readonly IConfiguration _appSettings;
+        private readonly INotificationsService _notificationsService;
 
         public PersonService(
-            IConfiguration appSettings)
+            IConfiguration appSettings , INotificationsService notificationsService)
         {
             _appSettings = appSettings;
+            _notificationsService = notificationsService;
         }
-        public PersonResponse GetAllPersons(string fileLocation)
+        public PersonResponse GetAllPersons()
         {
             var sqlConnectionString = _appSettings.GetSection("SQLConnectionString").Value;
             var readFromSQL = Convert.ToInt32(_appSettings.GetSection("ReadFromSQL").Value);
             var response = new PersonResponse();
-
-            var personLocation = fileLocation;
 
             response.Result = new List<Person>();
 
@@ -54,8 +54,14 @@ namespace ourOLXAPI.Services
                                 personToAdd.Gender = reader.GetString(6);
                                 response.Result.Add(personToAdd);
                                 // Do something with the retrieved data
+                                response.IsSuccess = true;
                             }
                         }
+                    }
+                    if (response.IsSuccess== true)
+                    {
+                        var slackResponse = _notificationsService.SendSlackMessege("#notifications", "Succesfully retreived all persons");
+                     
                     }
                     //call slackbot
                     connection.Close();
@@ -63,6 +69,7 @@ namespace ourOLXAPI.Services
             }
             catch  (Exception exx)
             {
+                var slackResponse = _notificationsService.SendSlackMessege("#notifications", $"failed to get all persons, error is: {exx.Message.ToString()}");
                 response.Message = $"Failure to get person from database {sqlConnectionString} , reason for failure : {exx.Message.ToString()} ";
                 response.IsSuccess = false;
             }

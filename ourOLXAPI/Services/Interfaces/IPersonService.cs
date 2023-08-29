@@ -8,7 +8,7 @@ namespace ourOLXAPI.Services.Interfaces
 {
     public interface IPersonService
     {
-        PersonResponse GetAllPersons(string fileLocation);
+        PersonResponse GetAllPersons();
         PersonResponse CreateAllPersons(CreatePersonRequest request);
         PersonResponse UpdateAllPersons( FieldsToUpdate request);
         PersonResponse DeleteAllPersons(DeletePersonRequest request);
